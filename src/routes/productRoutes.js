@@ -1,12 +1,15 @@
 const express = require('express');
 const Product = require('../models/Product');
 const authMiddleware = require('../middleware/auth');
-const {getProducts,searchProducts} = require('../controllers/productController')
+const {getProducts,searchProducts,addReview} = require('../controllers/productController')
+const isAdmin = require("../middleware/isAdmin")
 const router = express.Router();
 
 
 router.get("/", getProducts)
 router.get('/search', searchProducts);
+router.post('/',isAdmin,createProduct);
+router.post('/:id/reviews', addReview);
 // Create Product
 router.post('/', authMiddleware, async (req, res) => {
   const { name, price, description } = req.body;

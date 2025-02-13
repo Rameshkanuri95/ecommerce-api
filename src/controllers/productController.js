@@ -30,5 +30,23 @@ const getProducts = async (req, res) => {
     const products = await Product.find(query);
     res.json(products);
   };
+
+  const addReview = async (req, res) => {
+    const { id } = req.params;
+    const { rating, comment } = req.body;
   
-  module.exports = { getProducts,searchProducts };
+    const product = await Product.findByIdAndUpdate(
+      id,
+      { $push: { reviews: { rating, comment } } },
+      { new: true }
+    );
+  
+    const totalRatings = product.reviews.reduce((sum, review) => sum + review.rating, 0);
+    product.averageRating = totalRatings / product.reviews.length;
+    await product.save();
+  
+    res.json(product);
+  };
+  
+  module.exports = { getProducts, searchProducts, addReview };
+  
